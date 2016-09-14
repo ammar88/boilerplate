@@ -1,0 +1,7 @@
+---
+# tasks file for system
+- name: Update apt cache
+  apt: update_cache=yes
+
+- name: Enable UFW
+  ufw: state=enabled rule=allow name=OpenSSH

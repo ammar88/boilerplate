@@ -1,0 +1,7 @@
+---
+# tasks file for server
+- name: Nginx | Install Nginx package
+  apt: name=nginx state=present
+
+# - name: Nginx | Add Nginx exception to firewall
+#   ufw: name="Nginx HTTP" rule=allow

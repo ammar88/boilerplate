@@ -1,0 +1,22 @@
+---
+# tasks file for mariadb
+- name: MariaDB | Install MariaDB and python-mysqldb packages
+  apt: name={{ item }} state=present
+  with_items:
+    - mariadb-server
+    - python-mysqldb
+    - python-pip
+
+- name: Install pexpect
+  pip: name=pexpect
+
+- name: MariaDB | mysql_secure_installation
+  expect:
+    command: mysql_secure_installation
+    responses:
+      "Enter current password for root": "{{mysql_root_password}}"
+      "Change the root password" : "n"
+      "Remove anonymous users": "y"
+      "Disallow root login remotely": "y"
+      "Remove test database": "y"
+      "Reload privilege tables": "y"

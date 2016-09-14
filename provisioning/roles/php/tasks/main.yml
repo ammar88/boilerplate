@@ -1,0 +1,27 @@
+---
+# tasks file for php
+- name: PHP | Install PHP
+  apt: name={{ item }} state=present
+  with_items:
+    - php7.0-fpm
+    - php7.0-cli
+    - php7.0-common
+    - php7.0-curl
+    - php7.0-json
+    - php7.0-gd
+    - php7.0-mcrypt
+    - php7.0-odbc
+    - php7.0-pgsql
+    - php7.0-mbstring
+    - php7.0-mysql
+    - php7.0-xmlrpc
+    - php7.0-opcache
+    - php7.0-intl
+    - php7.0-bz2
+    - php7.0-xml
+
+- name: PHP | FPM disable cgi.fix_pathinfo
+  replace: dest=/etc/php/7.0/fpm/php.ini regexp=';cgi.fix_pathinfo=1' replace='cgi.fix_pathinfo=0' backup=yes
+
+- name: PHP | Restart PHP processor
+  service: name=php7.0-fpm state=restarted

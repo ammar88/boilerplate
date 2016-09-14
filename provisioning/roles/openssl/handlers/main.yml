@@ -1,0 +1,4 @@
+---
+# handlers file for openssl
+- name: restart nginx
+  service: name=nginx state=restarted

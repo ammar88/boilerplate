@@ -1,0 +1,48 @@
+---
+# tasks file for openssl
+
+- name: OpenSSL | Create the SSL Certificate
+  expect:
+    command: openssl req -x509 -nodes -days 365 -newkey rsa:2048 -keyout /etc/ssl/private/nginx-selfsigned.key -out /etc/ssl/certs/nginx-selfsigned.crt
+    creates: /etc/ssl/private/nginx-selfsigned.key
+    responses:
+      "Country Name": "UK"
+      "State or Province Name": "Greater London"
+      "Locality Name": "London"
+      "Organization Name": "ACME Ltd."
+      "Organizational Unit Name" : "Ministry of Water"
+      "Common Name": "localhost"
+      "Email Address": "admin@your_domain.com"
+
+- name: OpenSSL | Create a strong Diffie-Hellman group
+  command: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048 creates=/etc/ssl/certs/dhparam.pem
+
+- name: OpenSSL | Create a Configuration Snippet Pointing to the SSL Key and Certificate
+  copy:
+    src=roles/openssl/files/self-sign.conf 
+    dest=/etc/nginx/snippets/self-signed.conf 
+    owner=root
+    mode=0644
+
+- name: OpenSSL | Create a Configuration Snippet with Strong Encryption Settings
+  copy:
+    src=roles/openssl/files/ssl-params.conf 
+    dest=/etc/nginx/snippets/ssl-params.conf 
+    owner=root 
+    mode=0644
+
+- name: Nginx | Configure Nginx to Use SSL
+  template:
+    src=default.conf
+    dest=/etc/nginx/sites-available/default
+    backup=yes
+    owner=root
+    group=root
+    mode=0644
+  notify: restart nginx
+
+- name: Nginx | Add 'Nginx Full' exception to ufw
+  ufw: name="Nginx Full" rule=allow
+
+- name: Nginx | Remove redundant 'Nginx HTTP' exception from ufw
+  ufw: rule=allow name="Nginx HTTP" delete=yes

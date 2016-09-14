@@ -1,0 +1,59 @@
+---
+# tasks file for wordpress
+- name: MariaDB | Create wordpress database
+  mysql_db: name=wordpress state=present collation="utf8_unicode_ci" encoding="utf8"
+
+- name: MariaDB | Create wordpress database user
+  mysql_user: 
+    name={{ wordpress_db_user }}
+    password={{wordpress_db_password}}
+    priv=wordpress.*:ALL 
+    state=present
+
+- name: Nginx | Adjust Nginx's Configuration to Correctly Handle WordPress
+  template:
+    src=default.conf
+    dest=/etc/nginx/sites-available/default
+    backup=yes
+    owner=root
+    group=root
+    mode=0644
+  notify: restart nginx
+
+- name: Wordpress | Download and extract latest wordpress
+  unarchive: src="https://wordpress.org/latest.tar.gz" dest="/tmp" copy="no" remote_src="yes" list_files="yes"
+
+- name: Wordpress | Create upgrade directory
+  file: path=/tmp/wordpress/wp-content/upgrade state=directory mode=0755
+
+- name: Wordpress | Create wp-config file
+  template:
+    src=wp-config.php.j2
+    dest=/tmp/wordpress/wp-config.php
+
+- name: Wordpress | move wordpress folder contents to document root
+  command: cp -a /tmp/wordpress/. /var/www/html creates=/var/www/html/wp-config.php
+
+- name: Wordpress | Adjust ownership and permissions
+  file: 
+    path=/var/www/html 
+    state=directory 
+    owner=root 
+    group=www-data
+    recurse=yes
+
+- name: Wordpress | setgid bit on each of the directories within document root
+  command: find /var/www/html -type d -exec chmod g+s {} \;
+
+- name: Wordpress | Give web server write access to 'content', 'themes' & 'plugins' directories
+  file: path={{ item.path }} mode="g+w" state=directory recurse={{ item.recurse }}
+  with_items:
+    - { path: '/var/www/html/wp-content', recurse: 'no' }
+    - { path: '/var/www/html/wp-content/themes', recurse: 'yes' }
+    - { path: '/var/www/html/wp-content/plugins', recurse: 'yes' }
+
+# command: chown -R root:www-data /var/www/html
+# command: find /var/www/html -type d -exec chmod g+s {} \;
+# command: chmod g+w /var/www/html/wp-content
+# command: chmod -R g+w /var/www/html/wp-content/themes
+# command: chmod -R g+w /var/www/html/wp-content/plugins

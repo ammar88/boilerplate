@@ -21,5 +21,3 @@ jspm_packages
 
 # Optional npm cache directory
 .npm
-
-provisioning/hosts

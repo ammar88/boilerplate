@@ -12,8 +12,8 @@ Vagrant.configure("2") do |config|
 
   config.vm.provision :ansible do |ansible|
     ansible.playbook = "./provisioning/playbook.yml"
-    ansible.limit = "local"
-    ansible.inventory_path = "./provisioning/hosts"
+    # ansible.limit = "local"
+    # ansible.inventory_path = "./provisioning/hosts"
     ansible.ask_vault_pass = true
   end
 

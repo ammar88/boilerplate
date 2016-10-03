@@ -1,4 +1,7 @@
 ---
+-  name: PHP | Add repo to co-install php versions.
+   apt_repository: repo='ppa:ondrej/php' state=present
+
 # tasks file for php
 - name: PHP | Install PHP
   apt: name={{ item }} state=present

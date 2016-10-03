@@ -3,5 +3,11 @@
 - name: Update apt cache
   apt: update_cache=yes
 
+- name: Install pip
+  apt: name=python-pip state=present
+
+- name: Install pexpect
+  pip: name=pexpect
+
 - name: Enable UFW
   ufw: state=enabled rule=allow name=OpenSSH

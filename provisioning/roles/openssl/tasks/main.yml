@@ -17,6 +17,9 @@
 - name: OpenSSL | Create a strong Diffie-Hellman group
   command: openssl dhparam -out /etc/ssl/certs/dhparam.pem 2048 creates=/etc/ssl/certs/dhparam.pem
 
+# - name: Create nginx snippet directory
+#   file: path=/etc/nginx/snippets/ state=directory mode=0755
+
 - name: OpenSSL | Create a Configuration Snippet Pointing to the SSL Key and Certificate
   copy:
     src=roles/openssl/files/self-sign.conf 

@@ -8,7 +8,7 @@ Vagrant.configure("2") do |config|
   # config.vm.network "forwarded_port", guest: 80, host: 8080
   config.vm.network "private_network", ip: "192.168.50.50"
 
-  config.vm.synced_folder "./app", "/var/www"
+  config.vm.synced_folder "./app", "/var/www/html", owner: "ubuntu", group: "www-data", mount_options: ["dmode=775,fmode=664"]
 
   config.vm.provision :ansible do |ansible|
     ansible.playbook = "./provisioning/playbook.yml"

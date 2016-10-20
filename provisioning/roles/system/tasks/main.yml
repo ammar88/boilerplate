@@ -3,8 +3,19 @@
 - name: Update apt cache
   apt: update_cache=yes
 
-- name: Install pip
-  apt: name=python-pip state=present
+- name: Checking essentials
+  apt:
+    name: "{{ item }}"
+    state: present
+  with_items:
+  - python-software-properties
+  - python-pycurl
+  - build-essential
+  - python-pip
+  - python-mysqldb
+  - curl
+  - git-core
+  - dbus
 
 - name: Install pexpect
   pip: name=pexpect
